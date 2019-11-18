@@ -1,0 +1,54 @@
+node:
+  id: abc
+  metadata:
+    role: edge
+  cluster: def
+
+static_resources:
+  clusters:
+  - name: cluster-ads
+    connect_timeout: 1s
+    type: STATIC
+    http2_protocol_options: {}
+    lb_policy: ROUND_ROBIN
+    load_assignment:
+      cluster_name: cluster-ads
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: 127.0.0.1
+                port_value: 6565
+    tls_context:
+      common_tls_context:
+        alpn_protocols: h2
+        tls_certificates:
+          certificate_chain:
+            filename: "etc/envoy.cert"
+          private_key:
+            filename: "etc/envoy.key"
+
+dynamic_resources:
+  lds_config: { ads: {} }
+  cds_config: { ads: {} }
+  ads_config:
+    api_type: GRPC
+    grpc_services:
+      envoy_grpc:
+        cluster_name: cluster-ads
+
+admin:
+  access_log_path: logs/admin_access.log
+  address:
+    socket_address:
+      address: 127.0.0.1
+      port_value: 9901
+
+stats_sinks:
+- name: envoy.metrics_service
+  config:
+    grpc_service:
+      envoy_grpc:
+        cluster_name: cluster-ads
+

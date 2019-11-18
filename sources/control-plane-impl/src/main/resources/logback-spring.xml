@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<property name="LOGS" value="./logs" />
+
+	<appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<Pattern>%d %p %C{1.} [%t] %m%n</Pattern>
+		</encoder>
+	</appender>
+
+	<appender name="RollingLogFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOGS}/spring-boot-logger.log</file>
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<Pattern>%d %p %C{1.} [%t] %m%n</Pattern>
+		</encoder>
+
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${LOGS}/archived/spring-boot-logger-%d{yyyy-MM-dd}.%i.log
+			</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>10MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+	</appender>
+	
+	<appender name="ServerStreamTracerLogFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOGS}/serverstreamtracer.log</file>
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<Pattern>%d %p %C{1.} [%t] %m%n</Pattern>
+		</encoder>
+
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${LOGS}/archived/serverstreamtracer-logger-%d{yyyy-MM-dd}.%i.log
+			</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>10MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+	</appender>
+
+	<appender name="AccessLogsLogFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOGS}/accesslogs.log</file>
+		<encoder
+			class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<Pattern>%d %p %C{1.} [%t] %m%n</Pattern>
+		</encoder>
+
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${LOGS}/archived/accesslogs-logger-%d{yyyy-MM-dd}.%i.log
+			</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>10MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+	</appender>
+
+	<appender name="MetricsLogFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOGS}/metrics.log</file>
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<Pattern>%d %p %C{1.} [%t] %m%n</Pattern>
+		</encoder>
+
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${LOGS}/archived/metrics-logger-%d{yyyy-MM-dd}.%i.log
+			</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>10MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+	</appender>
+	
+	<!-- Log at info level in general -->
+	<root level="info">
+		<appender-ref ref="RollingLogFile" />
+		<appender-ref ref="Console" />
+	</root>
+	
+	<!--  Log Envoy interaction with control plane implementation separately -->
+	<logger name="com.hartle_klug.mhartle.sacon2019.control_plane.util.LoggingServerStreamTracerFactory" level="error" additivity="false">
+		<appender-ref ref="ServerStreamTracerLogFile" />
+	</logger>
+	
+	<!-- Log Envoy accesslogs separately -->
+	<logger name="com.hartle_klug.mhartle.sacon2019.control_plane.util.AccessLogService" level="info" additivity="false">
+		<appender-ref ref="AccessLogsLogFile" />
+	</logger>
+	
+	<!--  Log Envoy metrics separately -->
+	<logger name="com.hartle_klug.mhartle.sacon2019.control_plane.util.MetricsService" level="info" additivity="false">
+		<appender-ref ref="MetricsLogFile" />
+	</logger>
+
+	<!--
+	<logger name="io.netty" level="trace">
+		<appender-ref ref="RollingFile" />
+		<appender-ref ref="Console" />
+	</logger>
+
+	<logger name="io.grpc" level="trace">
+		<appender-ref ref="RollingFile" />
+		<appender-ref ref="Console" />
+	</logger>
+	-->
+</configuration>
